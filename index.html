@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stars For You</title>
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .card {
+      text-align: center;
+      color: #fff;
+      z-index: 10;
+      pointer-events: none;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 26px;
+      color: #ffeaa7;
+      text-shadow: 0 0 10px rgba(255, 234, 167, 0.5);
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 18px;
+      color: #dfe6e9;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>في وسط زحمة الأيام ✨</h1>
+  <p>وجودك بينور كل حاجة حواليكي ❤️</p>
+</div>
+
+<canvas id="stars"></canvas>
+
+<script>
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 100; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    radius: Math.random() * 1.5,
+    alpha: Math.random(),
+    speed: Math.random() * 0.02
+  });
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.alpha += p.speed;
+    if (p.alpha > 1 || p.alpha < 0) p.speed = -p.speed;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(p.alpha)})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+
+window.addEventListener('mousemove', (e) => {
+  for (let i = 0; i < 3; i++) {
+    particles.push({
+      x: e.clientX + (Math.random() - 0.5) * 20,
+      y: e.clientY + (Math.random() - 0.5) * 20,
+      radius: Math.random() * 2 + 1,
+      alpha: 1,
+      speed: -0.02
+    });
+  }
+});
+
+drawStars();
+</script>
+</body>
+</html>
