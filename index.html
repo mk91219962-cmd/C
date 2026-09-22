@@ -1,82 +1,170 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Special Message</title>
+  <title>Quiz & Riddle</title>
   <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
     body {
       margin: 0;
       background: #0f172a;
+      color: #f8fafc;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      font-family: sans-serif;
-    }
-    .wrapper {
-      cursor: pointer;
-    }
-    .envelope {
-      width: 280px;
-      height: 180px;
-      background: #e2e8f0;
-      position: relative;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: all 0.5s ease;
-    }
-    .heart-btn {
-      font-size: 40px;
-      transition: transform 0.3s;
-    }
-    .envelope:hover .heart-btn {
-      transform: scale(1.2);
-    }
-    .card-content {
-      display: none;
-      text-align: center;
+      min-height: 100vh;
       padding: 20px;
-      color: #334155;
     }
-    .card-content h2 {
-      color: #e11d48;
-      font-size: 20px;
-      margin-bottom: 8px;
+    .card {
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      text-align: center;
+      border: 1px solid #334155;
     }
-    .card-content p {
+    .q-title {
+      font-size: 18px;
+      color: #f43f5e;
+      margin-bottom: 20px;
+      line-height: 1.5;
+      font-weight: bold;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    button.opt {
+      background: #334155;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 14px;
+      border-radius: 10px;
       font-size: 16px;
-      margin: 0;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: right;
+    }
+    button.opt:hover {
+      background: #f43f5e;
+      border-color: #f43f5e;
+    }
+    .result h3 {
+      color: #38bdf8;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .result p {
+      font-size: 16px;
+      color: #cbd5e1;
+      line-height: 1.6;
     }
   </style>
 </head>
 <body>
 
-<div class="wrapper" onclick="openEnvelope()">
-  <div class="envelope" id="env">
-    <div class="heart-btn" id="heart">💌</div>
-    <div class="card-content" id="content">
-      <h2>رسالة خاصة ✨</h2>
-      <p>حبيت أقولك إن كلامك بيفرق وبيعدّل المزاج دايماً ❤️</p>
-    </div>
-  </div>
+<div class="card" id="quizCard">
+  <div class="q-title" id="questionText">جاري تحميل السؤال...</div>
+  <div class="options" id="optionsContainer"></div>
 </div>
 
 <script>
-function openEnvelope() {
-  const env = document.getElementById('env');
-  const heart = document.getElementById('heart');
-  const content = document.getElementById('content');
-  
-  env.style.background = '#ffffff';
-  env.style.width = '320px';
-  env.style.height = '200px';
-  heart.style.display = 'none';
-  content.style.display = 'block';
+const FORMSPREE_URL = "https://formspree.io/f/mvkganog"; 
+
+const quizData = [
+  {
+    question: "1️⃣ إيه أكثر حاجة بتعدل مزاجك فجأة لما تكوني مضايقة؟",
+    options: [
+      "أكلة حلوة تحبيها 🍕",
+      "رسالة لطيفة من حد عزيز ❤️",
+      "تسمعي مزيكا/أغنية هادية 🎧",
+      "تنامي وتفصلي خالص 😴"
+    ]
+  },
+  {
+    question: "2️⃣ لما يومك بيكون زحمة وطويل، بتفضلي تعملي إيه بالليل؟",
+    options: [
+      "أتفرج على فيلم أو مسلسلي المفضل 🎬",
+      "أتكلم مع حد برتاحله وأفضفض معاه ☕",
+      "أقفل الموبايل وأنام على طول 💤"
+    ]
+  },
+  {
+    question: "🧠 فزورة صغننة: حاجة كل ما بناخد منها بتكبر أكتر.. إيه هي؟",
+    options: [
+      "الحفرة 🕳️",
+      "الوقت ⏰",
+      "العمر 🎂",
+      "المشاكل 😅"
+    ]
+  }
+];
+
+let currentIndex = 0;
+let userAnswers = {};
+
+function showQuestion() {
+  const currentData = quizData[currentIndex];
+  document.getElementById("questionText").innerText = currentData.question;
+  const container = document.getElementById("optionsContainer");
+  container.innerHTML = "";
+
+  currentData.options.forEach((optText) => {
+    const btn = document.createElement("button");
+    btn.className = "opt";
+    btn.innerText = optText;
+    btn.onclick = () => selectAnswer(currentData.question, optText);
+    container.appendChild(btn);
+  });
 }
+
+function selectAnswer(qText, chosenOpt) {
+  userAnswers[`سؤال_${currentIndex + 1}`] = `[${qText}] -> الإجابة: [${chosenOpt}]`;
+  currentIndex++;
+  
+  if (currentIndex < quizData.length) {
+    showQuestion();
+  } else {
+    sendAnswers();
+  }
+}
+
+function sendAnswers() {
+  document.getElementById("quizCard").innerHTML = `<h3>جاري حفظ إجاباتك... ✨</h3>`;
+
+  fetch(FORMSPREE_URL, {
+    method: "POST",
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(userAnswers)
+  }).then(() => {
+    showResult();
+  }).catch(() => {
+    showResult();
+  });
+}
+
+function showResult() {
+  const card = document.getElementById("quizCard");
+  card.innerHTML = `
+    <div class="result">
+      <h3>خلصنا الاختبار! 🎉✨</h3>
+      <p>إجاباتك بتدل إنك شخصية رايقة وذوقك عالي بزيادة ❤️</p>
+      <p>يلا تعالي قوليلك رأيك في الأسئلة والفزورة 😉✨</p>
+    </div>
+  `;
+}
+
+showQuestion();
 </script>
 </body>
 </html>
