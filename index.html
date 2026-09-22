@@ -3,91 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stars For You</title>
+  <title>Special Message</title>
   <style>
     body {
       margin: 0;
-      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-      height: 100vh;
-      overflow: hidden;
+      background: #0f172a;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      font-family: sans-serif;
     }
-    .card {
+    .wrapper {
+      cursor: pointer;
+    }
+    .envelope {
+      width: 280px;
+      height: 180px;
+      background: #e2e8f0;
+      position: relative;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.5s ease;
+    }
+    .heart-btn {
+      font-size: 40px;
+      transition: transform 0.3s;
+    }
+    .envelope:hover .heart-btn {
+      transform: scale(1.2);
+    }
+    .card-content {
+      display: none;
       text-align: center;
-      color: #fff;
-      z-index: 10;
-      pointer-events: none;
       padding: 20px;
+      color: #334155;
     }
-    h1 {
-      font-size: 26px;
-      color: #ffeaa7;
-      text-shadow: 0 0 10px rgba(255, 234, 167, 0.5);
+    .card-content h2 {
+      color: #e11d48;
+      font-size: 20px;
       margin-bottom: 8px;
     }
-    p {
-      font-size: 18px;
-      color: #dfe6e9;
-      opacity: 0.9;
+    .card-content p {
+      font-size: 16px;
+      margin: 0;
     }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h1>في وسط زحمة الأيام ✨</h1>
-  <p>وجودك بينور كل حاجة حواليكي ❤️</p>
+<div class="wrapper" onclick="openEnvelope()">
+  <div class="envelope" id="env">
+    <div class="heart-btn" id="heart">💌</div>
+    <div class="card-content" id="content">
+      <h2>رسالة خاصة ✨</h2>
+      <p>حبيت أقولك إن كلامك بيفرق وبيعدّل المزاج دايماً ❤️</p>
+    </div>
+  </div>
 </div>
 
-<canvas id="stars"></canvas>
-
 <script>
-const canvas = document.getElementById('stars');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let particles = [];
-
-for (let i = 0; i < 100; i++) {
-  particles.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    radius: Math.random() * 1.5,
-    alpha: Math.random(),
-    speed: Math.random() * 0.02
-  });
+function openEnvelope() {
+  const env = document.getElementById('env');
+  const heart = document.getElementById('heart');
+  const content = document.getElementById('content');
+  
+  env.style.background = '#ffffff';
+  env.style.width = '320px';
+  env.style.height = '200px';
+  heart.style.display = 'none';
+  content.style.display = 'block';
 }
-
-function drawStars() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles.forEach(p => {
-    p.alpha += p.speed;
-    if (p.alpha > 1 || p.alpha < 0) p.speed = -p.speed;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(p.alpha)})`;
-    ctx.fill();
-  });
-  requestAnimationFrame(drawStars);
-}
-
-window.addEventListener('mousemove', (e) => {
-  for (let i = 0; i < 3; i++) {
-    particles.push({
-      x: e.clientX + (Math.random() - 0.5) * 20,
-      y: e.clientY + (Math.random() - 0.5) * 20,
-      radius: Math.random() * 2 + 1,
-      alpha: 1,
-      speed: -0.02
-    });
-  }
-});
-
-drawStars();
 </script>
 </body>
 </html>
